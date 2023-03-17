@@ -1,6 +1,10 @@
 package protocol
 
-import "time"
+import (
+	"time"
+
+	"github.com/araddon/dateparse"
+)
 
 // EventAction can store all different types of event actions described in
 // RFC 7483, section 10.2.3
@@ -80,7 +84,9 @@ type EventDate struct {
 }
 
 // Date returns the EventDate corresponding to
+//
 //	yyyy-mm-dd hh:mm:ss + nsec nanoseconds
+//
 // in the appropriate zone for that time in the given location.
 //
 // The month, day, hour, min, sec, and nsec values may be outside
@@ -115,14 +121,7 @@ func (e *EventDate) UnmarshalJSON(data []byte) (err error) {
 	if err = e.Time.UnmarshalJSON(data); err == nil {
 		return
 	}
-
-	// allow date without time
-	if e.Time, err = time.Parse(`"2006-01-02"`, string(data)); err == nil {
-		return
-	}
-
-	// allow date without timezone
-	e.Time, err = time.Parse(`"2006-01-02T15:04:05"`, string(data))
+	e.Time, err = dateparse.ParseLocal(string(data))
 	return
 }
 
@@ -133,12 +132,6 @@ func (e *EventDate) UnmarshalText(data []byte) (err error) {
 		return
 	}
 
-	// allow date without time
-	if e.Time, err = time.Parse(`2006-01-02`, string(data)); err == nil {
-		return
-	}
-
-	// allow date without timezone
-	e.Time, err = time.Parse(`2006-01-02T15:04:05`, string(data))
+	e.Time, err = dateparse.ParseLocal(string(data))
 	return
 }
