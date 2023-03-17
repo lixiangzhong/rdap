@@ -118,9 +118,6 @@ func NewEventDate(t time.Time) EventDate {
 // expected to be a quoted string in RFC 3339 format with or without the
 // time/timezone
 func (e *EventDate) UnmarshalJSON(data []byte) (err error) {
-	if err = e.Time.UnmarshalJSON(data); err == nil {
-		return
-	}
 	e.Time, err = dateparse.ParseLocal(string(data))
 	return
 }
@@ -128,10 +125,6 @@ func (e *EventDate) UnmarshalJSON(data []byte) (err error) {
 // UnmarshalText implements the encoding.TextUnmarshaler interface. The time
 // is expected to be in RFC 3339 format with or without the time/timezone
 func (e *EventDate) UnmarshalText(data []byte) (err error) {
-	if err = e.Time.UnmarshalText(data); err == nil {
-		return
-	}
-
 	e.Time, err = dateparse.ParseLocal(string(data))
 	return
 }
