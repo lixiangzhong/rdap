@@ -1,6 +1,7 @@
 package protocol
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/araddon/dateparse"
@@ -118,13 +119,21 @@ func NewEventDate(t time.Time) EventDate {
 // expected to be a quoted string in RFC 3339 format with or without the
 // time/timezone
 func (e *EventDate) UnmarshalJSON(data []byte) (err error) {
-	e.Time, err = dateparse.ParseLocal(string(data))
+	s, err := strconv.Unquote(string(data))
+	if err != nil {
+		return err
+	}
+	e.Time, err = dateparse.ParseLocal(s)
 	return
 }
 
 // UnmarshalText implements the encoding.TextUnmarshaler interface. The time
 // is expected to be in RFC 3339 format with or without the time/timezone
 func (e *EventDate) UnmarshalText(data []byte) (err error) {
-	e.Time, err = dateparse.ParseLocal(string(data))
+	s, err := strconv.Unquote(string(data))
+	if err != nil {
+		return err
+	}
+	e.Time, err = dateparse.ParseLocal(s)
 	return
 }
